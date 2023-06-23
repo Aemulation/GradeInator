@@ -1,0 +1,30 @@
+<.header>
+  Listing Assignments
+  <:actions>
+    <%= if @user.role == "teacher" do %>
+      <.link patch={~p"/assignments/new"} replace={true}>
+        <.button>New Assignment</.button>
+      </.link>
+    <% end %>
+  </:actions>
+</.header>
+
+<.assignments_table user={@user} assignments={@streams.assignments} />
+
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="assignment-modal"
+  show
+  on_cancel={JS.patch(~p"/assignments")}
+>
+  <.live_component
+    module={GradeInatorWeb.AssignmentLive.FormComponent}
+    id={@assignment.id || :new}
+    title={@page_title}
+    action={@live_action}
+    assignment={@assignment}
+    user={@user}
+    patch={~p"/assignments"}
+  />
+</.modal>
+

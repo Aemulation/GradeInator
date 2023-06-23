@@ -1,0 +1,42 @@
+<.header>
+  <%= @assignment.assignment_name %>
+  <:actions>
+    <.link patch={~p"/assignments/#{@assignment.id}/submissions/new"} replace={true}>
+      <.button>Submit</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="submissions"
+  rows={@streams.submissions}
+  row_click={
+    fn {_id, submission} ->
+      JS.navigate(~p"/assignments/#{@assignment.id}/submissions/#{submission}")
+    end
+  }
+>
+  <:col :let={{_id, submission}} label="state">
+    <%= submission.result || submission.state.state %>
+  </:col>
+  <:col :let={{_id, submission}} label="Submitted at"><%= Time.get_pretty_datetime(submission.inserted_at) %></:col>
+</.table>
+
+<.back navigate={~p"/assignments/#{@assignment.id}"}>Back to assignment</.back>
+
+<.modal
+  :if={@live_action in [:new]}
+  id="submission-modal"
+  show
+  on_cancel={JS.patch(~p"/assignments/#{@assignment.id}/submissions")}
+>
+  <.live_component
+    module={GradeInatorWeb.SubmissionLive.FormComponent}
+    id={:new}
+    title={@page_title}
+    action={@live_action}
+    submission={@submission}
+    user={@user}
+    patch={~p"/assignments/#{@assignment.id}/submissions"}
+  />
+</.modal>

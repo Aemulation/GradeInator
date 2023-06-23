@@ -1,0 +1,40 @@
+<.header>
+  Submission <%= @submission.id %>
+  <:subtitle>This is a submission record from your database.</:subtitle>
+  <:actions>
+  <%= if Submission.allowed_to_download(@submission.id, @user) do %>
+    <%= Phoenix.HTML.Link.button("Download",
+      to: ~p"/assignments/#{@assignment.id}/submissions/#{@submission.id}/download",
+      method: :get,
+      class: [
+        "phx-submit-loading:opacity-75 rounded-lg bg-zinc-900 hover:bg-zinc-700 py-2 px-3",
+        "text-sm font-semibold leading-6 text-white active:text-white/80"
+      ]
+    ) %>
+  <% end %>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Submission state"><%= @submission.result || @submission.state.state %></:item>
+  <:item title="Submitted At "><%= Time.get_pretty_datetime(@submission.inserted_at) %></:item>
+</.list>
+
+<%= if @submission.result do %>
+  <div class="mt-14">
+    <.header>Submission results</.header>
+    <div class="-my-4 divide-y divide-zinc-100">
+      <div
+        :for={submission_score <- @submission.submission_scores}
+        class="flex gap-4 py-4 text-sm leading-6 sm:gap-8"
+      >
+        <div class="w-1/4 flex-none text-zinc-500">
+          <%= submission_score.assignment_score.key %>
+        </div>
+        <div class="w-3/4 flex-none text-zinc-700 whitespace-pre-wrap"><%= submission_score.value %></div>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<.back navigate={~p"/assignments/#{@assignment.id}/submissions"}>Back to submissions</.back>

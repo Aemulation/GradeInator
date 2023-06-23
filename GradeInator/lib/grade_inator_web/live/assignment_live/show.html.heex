@@ -1,0 +1,82 @@
+<.header>
+  Assignment <%= @assignment.assignment_name %>
+  <:actions>
+    <%= if @user.role == "teacher" do %>
+      <.link patch={~p"/assignments/#{@assignment}/show/edit"} phx-click={JS.push_focus()}>
+        <.button>Edit assignment</.button>
+      </.link>
+    <% end %>
+  </:actions>
+  <:actions>
+    <div class="group/submissions inline-block w-32">
+      <.button class="w-32">Submissions</.button>
+      <table class="hidden w-32 group-hover/submissions:table group-hover/submissions:absolute ">
+        <tr>
+          <th class={[
+            "phx-submit-loading:opacity-75 rounded-lg bg-zinc-900 hover:bg-zinc-700",
+            "text-sm font-semibold leading-6 text-white active:text-white/80 w-full"
+          ]}>
+            <.link navigate={~p"/assignments/#{@assignment}/submissions"}>
+              <button class="h-10 w-full">Personal</button>
+            </.link>
+          </th>
+        </tr>
+        <%= if @user.group do %>
+          <tr>
+            <th class={[
+              "phx-submit-loading:opacity-75 rounded-lg bg-zinc-900 hover:bg-zinc-700",
+              "text-sm font-semibold leading-6 text-white active:text-white/80"
+            ]}>
+              <.link navigate={~p"/assignments/#{@assignment}/groups/#{@user.group.id}"}>
+                <button class="h-10 w-full">Group</button>
+              </.link>
+            </th>
+          </tr>
+        <% end %>
+      </table>
+    </div>
+  </:actions>
+  <:actions>
+    <.link navigate={~p"/assignments/#{@assignment}/groups"}>
+      <.button>groups</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.assignment_list assignment={@assignment} user={@user} />
+
+<.back navigate={~p"/assignments"}>Back to assignments</.back>
+
+<.modal
+  :if={@live_action == :edit}
+  id="assignment-modal"
+  show
+  on_cancel={JS.patch(~p"/assignments/#{@assignment}")}
+>
+  <.live_component
+    module={GradeInatorWeb.AssignmentLive.FormComponent}
+    id={@assignment.id}
+    title={@page_title}
+    action={@live_action}
+    assignment={@assignment}
+    user={@user}
+    patch={~p"/assignments/#{@assignment}"}
+  />
+</.modal>
+
+<.modal
+  :if={@live_action == :submit}
+  id="assignment-modal"
+  show
+  on_cancel={JS.patch(~p"/assignments/#{@assignment}")}
+>
+  <.live_component
+    module={GradeInatorWeb.AssignmentLive.FormComponent}
+    id={@assignment.id}
+    title={@page_title}
+    action={@live_action}
+    assignment={@assignment}
+    user={@user}
+    patch={~p"/assignments/#{@assignment}"}
+  /> Hello there <%= @assignment.id %>
+</.modal>

@@ -1,0 +1,15 @@
+<.header>
+  Listing groups for assignment: <%= @assignment.assignment_name %>
+</.header>
+
+<.table
+  id="assignments"
+  rows={@streams.groups}
+  row_click={
+    fn {_id, group} -> JS.navigate(~p"/assignments/#{@assignment.id}/groups/#{group.id}") end
+  }
+>
+  <:col :let={{_id, group}} label="Group name">
+    <%= group.name %>
+  </:col>
+</.table>
